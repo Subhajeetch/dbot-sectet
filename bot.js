@@ -6,6 +6,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
+require('dotenv').config();
+const PORT = process.env.PORT || 3000;
 
 const levelUp = require("./cool-features/level-up.js");
 const avatarCommand = require("./cool-features/avatar-command.js");
@@ -50,15 +52,11 @@ app.get("/", (req, res) => {
     `);
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on http://localhost:3000");
-});
+app.listen(PORT, () => console.log(`Server Started! Port: ${PORT}`));
 
 client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
   startTasks(client, botStatusChangeTime, botIconChangeTime);
 });
 
-client.login(
-  "MTI5NTcyMDg5NjIyNDU2MzI3MQ.GO7JaI.cYt2jGSTPMY8VOaEqwfDAOJxPgaafCUGd5SJRM"
-);
+client.login(process.env.TOKEN);
