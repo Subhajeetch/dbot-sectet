@@ -1,3 +1,3 @@
-const serverPrifix = "?";
+const serverPrifix = "!";
 
 module.exports = serverPrifix;
