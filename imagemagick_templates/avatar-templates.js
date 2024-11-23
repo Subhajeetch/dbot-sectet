@@ -1,6 +1,7 @@
 const sharp = require("sharp");
 const axios = require("axios");
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid"); // Importing uuid
 
 const downloadImage = async (url, filepath) => {
   const response = await axios({
@@ -18,10 +19,11 @@ const generateLoveImage = async (
   callback
 ) => {
   try {
-    // Download the avatar images
-    const avatarPath1 = "avatar1.png";
-    const avatarPath2 = "avatar2.png";
+    // Generate unique file names for the avatar images
+    const avatarPath1 = `avatar1_${uuidv4()}.png`;
+    const avatarPath2 = `avatar2_${uuidv4()}.png`;
 
+    // Download the avatar images
     await downloadImage(avatarURL1, avatarPath1);
     await downloadImage(avatarURL2, avatarPath2);
 

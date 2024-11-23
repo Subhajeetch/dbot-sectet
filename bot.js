@@ -11,6 +11,7 @@ const PORT = process.env.PORT || 3000;
 
 const levelUp = require("./cool-features/level-up.js");
 const avatarCommand = require("./cool-features/avatar-command.js");
+const purgeCommand = require("./cool-features/purgeCommand.js");
 const serverPrifix = require("./prifix.js");
 const { startTasks } = require("./startingTasks.js");
 
@@ -35,7 +36,8 @@ client.on("messageCreate", async message => {
   if (message.author.bot) return; // Ignore messages from bots
 
   levelUp(message); //levelUp card
-  avatarCommand(message);
+  avatarCommand(message); // avatar command 
+  purgeCommand(message); // purge command 
 
   if (message.content === `${serverPrifix}ping`) {
     const ping = Date.now() - message.createdTimestamp;
