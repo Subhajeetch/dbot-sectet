@@ -28,7 +28,7 @@ const client = new Client({
   ]
 });
 
-const botIconChangeTime = 1; //number (in minutes)
+const botIconChangeTime = 8; //number (in minutes)
 const botStatusChangeTime = 1; //number (in minutes)
 
 client.on("messageCreate", async message => {
