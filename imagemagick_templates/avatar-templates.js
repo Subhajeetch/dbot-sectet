@@ -1,45 +1,78 @@
-const im = require("imagemagick");
+const sharp = require("sharp");
+const axios = require("axios");
 const fs = require("fs");
-const path = require("path");
 
-const generateLoveImage = (user1AvatarPath, user2AvatarPath, outputPath, callback) => {
-  // Define the dimensions for the canvas
-  const canvasWidth = 1024;
-  const canvasHeight = 512;
+const downloadImage = async (url, filepath) => {
+  const response = await axios({
+    url,
+    method: "GET",
+    responseType: "arraybuffer"
+  });
+  fs.writeFileSync(filepath, response.data);
+};
 
-  // Define the size and position for user avatars
-  const avatarSize = 530; // You can adjust this to your needs
-  const user1X = -5; // Position for user1's avatar (left side)
-  const user1Y = (canvasHeight - avatarSize) / 2; 
-  // Center vertically
-  const user2X = canvasWidth - avatarSize - -5; // Position for user2's avatar (right side)
-  const user2Y = (canvasHeight - avatarSize) / 2; 
-  // Center vertically
+const generateLoveImage = async (
+  avatarURL1,
+  avatarURL2,
+  outputPath,
+  callback
+) => {
+  try {
+    // Download the avatar images
+    const avatarPath1 = "avatar1.png";
+    const avatarPath2 = "avatar2.png";
 
-  // Generate the image with user1 and user2 avatars
-  im.convert(
-    [
-      // Set the canvas size to match the love image dimensions
-      "-size", `${canvasWidth}x${canvasHeight}`, "xc:white", // White background to start with
+    await downloadImage(avatarURL1, avatarPath1);
+    await downloadImage(avatarURL2, avatarPath2);
 
-      // User 1 Avatar (left side)
-      "-draw", `image over ${user1X},${user1Y} ${avatarSize},${avatarSize} '${user1AvatarPath}'`, // Position and scale user1's avatar
+    // Define dimensions for the canvas and avatar positions
+    const canvasWidth = 1012;
+    const canvasHeight = 512;
+    const avatarSize = 512;
 
-      // User 2 Avatar (right side)
-      "-draw", `image over ${user2X},${user2Y} ${avatarSize},${avatarSize} '${user2AvatarPath}'`, // Position and scale user2's avatar
+    // Resize both avatar images to the same dimensions
+    const resizedAvatar1Buffer = await sharp(avatarPath1)
+      .resize(avatarSize, avatarSize)
+      .toBuffer();
 
-      // Output the result to the specified output path
-      outputPath,
-    ],
-    (err) => {
-      if (err) {
-        console.error('Error generating the image:', err);
-        callback(err);
-        return;
+    const resizedAvatar2Buffer = await sharp(avatarPath2)
+      .resize(avatarSize, avatarSize)
+      .toBuffer();
+
+    // Check the dimensions of the resized avatars
+    const avatar1Metadata = await sharp(resizedAvatar1Buffer).metadata();
+    const avatar2Metadata = await sharp(resizedAvatar2Buffer).metadata();
+
+    const user1X = -5;
+    const user1Y = (canvasHeight - avatarSize) / 2;
+    const user2X = canvasWidth - avatarSize - -5;
+    const user2Y = (canvasHeight - avatarSize) / 2;
+
+    // Create the composite image with resized avatars
+    await sharp({
+      create: {
+        width: canvasWidth,
+        height: canvasHeight,
+        channels: 3,
+        background: { r: 255, g: 255, b: 255 }
       }
-      callback(null); // No errors, image generated successfully
-    }
-  );
+    })
+      .composite([
+        { input: resizedAvatar1Buffer, left: user1X, top: user1Y },
+        { input: resizedAvatar2Buffer, left: user2X, top: user2Y }
+      ])
+      .toFile(outputPath);
+
+    // Clean up temporary files
+    fs.unlinkSync(avatarPath1);
+    fs.unlinkSync(avatarPath2);
+
+    // Call the callback with no errors
+    callback(null);
+  } catch (err) {
+    console.error("Error generating the love image with Sharp:", err);
+    callback(err);
+  }
 };
 
 module.exports = generateLoveImage;
