@@ -83,7 +83,7 @@ const avatarCommand = async message => {
         const generatingEmbed = new EmbedBuilder()
           .setColor("#FFA500")
           .setDescription(
-            "<a:loading:1310129133509939230>   **Generating image...**"
+            " **Generating image...**"
           );
 
         const generatingMessage = await message.reply({
