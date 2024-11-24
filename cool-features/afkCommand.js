@@ -81,9 +81,8 @@ const checkAfkStatus = async message => {
       return;
     }
 
-    // If the user messaged after 1 minute, calculate the AFK duration
-    const durationMs = Date.now() - afkTimestamp;
-    const duration = formatDuration(durationMs);
+    // Create a Discord timestamp format for relative time
+    const relativeTime = `<t:${Math.floor(afkTimestamp / 1000)}:R>`;
 
     // Remove the user from AFK
     delete afkData[userId];
@@ -92,9 +91,7 @@ const checkAfkStatus = async message => {
     // Send AFK removed confirmation
     const afkRemovedEmbed = new EmbedBuilder()
       .setColor(0x01d0ff)
-      .setDescription(
-        `**Welcome Back! ** You were AFK since ${duration}.`
-      );
+      .setDescription(`**Welcome Back! ** You were AFK since ${relativeTime}.`);
 
     await message.reply({ embeds: [afkRemovedEmbed] });
   } catch (error) {
@@ -102,18 +99,42 @@ const checkAfkStatus = async message => {
   }
 };
 
-// Helper function to format duration into human-readable format
-const formatDuration = ms => {
-  const seconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
 
-  const dayString = days > 0 ? `${days} day(s) ` : "";
-  const hourString = hours % 24 > 0 ? `${hours % 24} hour(s) ` : "";
-  const minuteString = minutes % 60 > 0 ? `${minutes % 60} minute(s)` : "";
 
-  return `${dayString}${hourString}${minuteString}`.trim();
+const checkMentionedAfk = message => {
+  try {
+    // Load AFK data
+    let afkData = {};
+    if (fs.existsSync(usersAFKPath)) {
+      const data = fs.readFileSync(usersAFKPath, "utf-8");
+      try {
+        afkData = JSON.parse(data);
+      } catch (err) {
+        console.error("Error parsing AFK data:", err);
+      }
+    }
+
+    // Loop through all mentioned users
+    message.mentions.users.forEach(user => {
+      const userId = user.id;
+
+      // Check if the mentioned user is AFK
+      if (afkData[userId]) {
+        const afkTimestamp = afkData[userId].timestamp;
+        const reason = afkData[userId].reason || "No reason provided";
+
+        // Create a Discord timestamp format for relative time
+        const relativeTime = `<t:${Math.floor(afkTimestamp / 1000)}:R>`;
+
+        // Send the AFK response
+        message.channel.send(
+          `${user.username} is AFK since ${relativeTime} for reason: ${reason}`
+        );
+      }
+    });
+  } catch (error) {
+    console.error("Error in checking mentioned AFK:", error);
+  }
 };
 
-module.exports = { afkCommand, checkAfkStatus };
+module.exports = { afkCommand, checkAfkStatus, checkMentionedAfk };

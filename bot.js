@@ -11,7 +11,11 @@ const PORT = process.env.PORT || 3000;
 
 const serverPrefix = require("./prifix.js");
 const { startTasks } = require("./startingTasks.js");
-const { afkCommand, checkAfkStatus } = require("./cool-features/afkCommand.js");
+const {
+  afkCommand,
+  checkAfkStatus,
+  checkMentionedAfk
+} = require("./cool-features/afkCommand.js");
 const levelUp = require("./cool-features/level-up.js");
 const avatarCommand = require("./cool-features/avatar-command.js");
 const purgeCommand = require("./cool-features/purgeCommand.js");
@@ -50,6 +54,7 @@ client.on("messageCreate", async message => {
   banCommand(message); //ban command
   unbanCommand(message); // unban command
 
+  checkMentionedAfk(message); // checks if user is afk & sends response
   await checkAfkStatus(message); // afk status
 
   // Handle AFK command

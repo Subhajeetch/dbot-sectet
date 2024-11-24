@@ -19,7 +19,7 @@ const unmuteCommand = async message => {
       const args = message.content
         .slice(
           serverPrefix.length +
-            (message.content.startsWith(`${serverPrefix}unmute`) ? 6 : 2)
+            (message.content.startsWith(`${serverPrefix}unmute`) ? 7 : 2)
         )
         .trim()
         .split(/ +/g);
@@ -39,7 +39,7 @@ const unmuteCommand = async message => {
 
       // Check for invalid input formats (e.g., missing spaces)
       const commandRegex = new RegExp(
-        `^${serverPrefix}(unmute|um)\\s+<@!?(\\d+)>$`
+        `^\\${serverPrefix}(unmute|um)\\s+<@!?(\\d+)>$`
       );
       if (!commandRegex.test(message.content)) {
         return sendUnmuteGuide();

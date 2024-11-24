@@ -37,8 +37,9 @@ const banCommand = async message => {
 
       // Check for invalid input formats (e.g., missing spaces)
       const commandRegex = new RegExp(
-        `^${serverPrefix}(ban|b)\\s+<@!?(\\d+)>\\s*(.*)?$`
+        `^\\${serverPrefix}(ban|b)\\s+<@!?(\\d+)>\\s*(.*)?$`
       );
+
       if (!commandRegex.test(message.content)) {
         return sendBanGuide();
       }

@@ -13,7 +13,7 @@ const timeoutCommand = async message => {
         !message.member.permissions.has(PermissionFlagsBits.ModerateMembers)
       ) {
         const noPermEmbed = errorEmbed(
-          "You don't have permissions bro."
+          "You don't have the required permissions bro."
         );
         return message.reply({ embeds: [noPermEmbed] });
       }
@@ -21,7 +21,7 @@ const timeoutCommand = async message => {
       const args = message.content
         .slice(
           serverPrefix.length +
-            (message.content.startsWith(`${serverPrefix}mute`) ? 5 : 1)
+            (message.content.startsWith(`${serverPrefix}mute`) ? 4 : 1)
         )
         .trim()
         .split(/ +/g);
@@ -33,7 +33,7 @@ const timeoutCommand = async message => {
           .setTitle("🔇 Mute Guide")
           .setColor(0x54ff32)
           .setDescription(
-            `**Usage:**\n${serverPrefix}mute @user [duration] [reason]\n${serverPrefix}m @user [duration] [reason]\n\n**Examples:**\n${serverPrefix}m @user\n${serverPrefix}mute @user 30s Spamming\n${serverPrefix}m @user 1h Inappropriate behavior\n\n**Duration format:**\ns or S - seconds\nm or M - minutes\nh or H - hours\nd or D - days\n\nDefault duration is 1 hour if not specified.\nMinimum duration: 10 seconds\nMaximum duration: 14 days`
+            `**Usage:**\n${serverPrefix}mute @user duration reason\n${serverPrefix}m @user duration reason\n\n**Examples:**\n${serverPrefix}m @user\n${serverPrefix}mute @user 30s Spamming\n${serverPrefix}m @user 1h Inappropriate behavior\n\n**Duration format:**\ns - seconds\nm - minutes\nh - hours\nd - days\n\nDefault duration is 5 minutes if not specified.\nMinimum duration: 10 seconds\nMaximum duration: 14 days`
           )
           .setFooter({ text: "Mention a user to mute them." });
         return message.reply({ embeds: [muteGuideEmbed] });
@@ -41,7 +41,7 @@ const timeoutCommand = async message => {
 
       // Check for invalid input formats (e.g., missing spaces)
       const commandRegex = new RegExp(
-        `^${serverPrefix}(mute|m)\\s+<@!?(\\d+)>\\s*(\\d+[smhd])?\\s*(.*)?$`
+        `^\\${serverPrefix}(mute|m)\\s+<@!?(\\d+)>\\s*(\\d+[smhd])?\\s*(.*)?$`
       );
       if (!commandRegex.test(message.content)) {
         return sendMuteGuide();
@@ -54,7 +54,7 @@ const timeoutCommand = async message => {
 
       // Check if the user is already muted
       if (mentionedUser.isCommunicationDisabled()) {
-        const alreadyMutedEmbed = errorEmbed("This user is already muted.");
+        const alreadyMutedEmbed = errorEmbed("This user is already muted bro.");
         return message.reply({ embeds: [alreadyMutedEmbed] });
       }
 
@@ -68,7 +68,7 @@ const timeoutCommand = async message => {
       }
 
       // Parse duration and reason
-      let duration = 300000; // Default 1 hour in milliseconds
+      let duration = 300000; // Default 5 mins in milliseconds
       let reason = "No reason provided";
 
       if (args.length >= 2) {

@@ -17,8 +17,8 @@ const kickCommand = async message => {
       const args = message.content
         .slice(
           serverPrefix.length +
-            (message.content.startsWith(`${serverPrefix}kick`) ? 4 : 1)
-        )
+            (message.content.startsWith(`${serverPrefix}kick`) ? 5 : 1)
+        ) // Adjusted slicing length for the prefix `?`
         .trim()
         .split(/ +/g);
       const mentionedUser = message.mentions.members.first();
@@ -37,8 +37,8 @@ const kickCommand = async message => {
 
       // Check for invalid input formats (e.g., missing spaces)
       const commandRegex = new RegExp(
-        `^${serverPrefix}(kick|k)\\s+<@!?(\\d+)>\\s*(.*)?$`
-      );
+        `^\\${serverPrefix}(kick|k)\\s+<@!?(\\d+)>\\s*(.*)?$`
+      ); // Escaped the `?` prefix in regex
       if (!commandRegex.test(message.content)) {
         return sendKickGuide();
       }

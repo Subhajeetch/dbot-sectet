@@ -22,7 +22,7 @@ const purgeCommand = async message => {
           .setTitle(`🍃 Purge Guide`)
           .setColor(0x54ff32)
           .setDescription(
-            `**Normal purge:**\nUse ${serverPrefix}p 5 or ${serverPrefix}purge 5.\n\n**Specific user purge:**\nUse ${serverPrefix}p 5 @user or ${serverPrefix}purge 5 @user.`
+            `**Normal purge:**\n${serverPrefix}p 5\n${serverPrefix}purge 5.\n\n**Specific user purge:**\n${serverPrefix}p 5 @user\n${serverPrefix}purge 5 @user.`
           )
           .setFooter({ text: "Provide a number between 2 - 300." });
         return message.channel.send({ embeds: [provideNumEmbed] });
