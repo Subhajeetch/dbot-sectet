@@ -6,14 +6,20 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
-require('dotenv').config();
+require("dotenv").config();
 const PORT = process.env.PORT || 3000;
 
+const serverPrefix = require("./prifix.js");
+const { startTasks } = require("./startingTasks.js");
+const { afkCommand, checkAfkStatus } = require("./cool-features/afkCommand.js");
 const levelUp = require("./cool-features/level-up.js");
 const avatarCommand = require("./cool-features/avatar-command.js");
 const purgeCommand = require("./cool-features/purgeCommand.js");
-const serverPrifix = require("./prifix.js");
-const { startTasks } = require("./startingTasks.js");
+const timeoutCommand = require("./cool-features/timeoutCommand.js");
+const unmuteCommand = require("./cool-features/unMuteCommand.js");
+const kickCommand = require("./cool-features/kickCommand.js");
+const banCommand = require("./cool-features/banCommand.js");
+const unbanCommand = require("./cool-features/unbanCommand.js");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,10 +42,22 @@ client.on("messageCreate", async message => {
   if (message.author.bot) return; // Ignore messages from bots
 
   levelUp(message); //levelUp card
-  avatarCommand(message); // avatar command 
-  purgeCommand(message); // purge command 
+  avatarCommand(message); // avatar command
+  purgeCommand(message); // purge command
+  timeoutCommand(message); // mute command
+  unmuteCommand(message); // ummute command
+  kickCommand(message); // kick command
+  banCommand(message); //ban command
+  unbanCommand(message); // unban command
 
-  if (message.content === `${serverPrifix}ping`) {
+  await checkAfkStatus(message); // afk status
+
+  // Handle AFK command
+  if (message.content.startsWith(`${serverPrefix}afk`)) {
+    await afkCommand(message);
+  }
+
+  if (message.content === `${serverPrefix}ping`) {
     const ping = Date.now() - message.createdTimestamp;
     const apiPing = Math.round(client.ws.ping);
     await message.reply(
