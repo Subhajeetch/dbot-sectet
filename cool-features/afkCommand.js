@@ -34,11 +34,11 @@ const afkCommand = async message => {
         const alreadyAfkEmbed = errorEmbed("You are already AFK bro.");
         const reply = await message.reply({ embeds: [alreadyAfkEmbed] });
 
-      // Delete the reply after 10 seconds
-      setTimeout(() => {
-        reply.delete().catch(console.error); // Ensure deletion errors are logged
-      }, 10000); // 10,000 ms = 10 seconds
-      return;
+        // Delete the reply after 10 seconds
+        setTimeout(() => {
+          reply.delete().catch(console.error); // Ensure deletion errors are logged
+        }, 10000); // 10,000 ms = 10 seconds
+        return;
       }
 
       // Mark the user as AFK
@@ -100,17 +100,15 @@ const checkAfkStatus = async message => {
       .setDescription(`**Welcome Back! ** You were AFK since ${relativeTime}.`);
 
     const reply = await message.reply({ embeds: [afkRemovedEmbed] });
-    
+
     setTimeout(() => {
-        reply.delete().catch(console.error); // Ensure deletion errors are logged
-      }, 10000); // 10,000 ms = 10 seconds
-      return;
+      reply.delete().catch(console.error); // Ensure deletion errors are logged
+    }, 10000); // 10,000 ms = 10 seconds
+    return;
   } catch (error) {
     console.error("Error in checking AFK status:", error);
   }
 };
-
-
 
 const checkMentionedAfk = message => {
   try {
@@ -139,8 +137,8 @@ const checkMentionedAfk = message => {
 
         // Send the AFK response
         message.channel.send(
-          `${user.username} is AFK since ${relativeTime} for reason: ${reason}`
-        );
+            `${user.username} is AFK since ${relativeTime} for reason: ${reason}`
+          ).then(msg => setTimeout(() => msg.delete(), 10000)); // Delete after 10 secs
       }
     });
   } catch (error) {
