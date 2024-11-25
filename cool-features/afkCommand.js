@@ -31,8 +31,14 @@ const afkCommand = async message => {
 
       // If the user is already AFK, respond with a message
       if (afkData[userId]) {
-        const alreadyAfkEmbed = errorEmbed("You are already in AFK bro.");
-        return message.reply({ embeds: [alreadyAfkEmbed] });
+        const alreadyAfkEmbed = errorEmbed("You are already AFK bro.");
+        const reply = await message.reply({ embeds: [alreadyAfkEmbed] });
+
+      // Delete the reply after 10 seconds
+      setTimeout(() => {
+        reply.delete().catch(console.error); // Ensure deletion errors are logged
+      }, 10000); // 10,000 ms = 10 seconds
+      return;
       }
 
       // Mark the user as AFK
@@ -93,7 +99,12 @@ const checkAfkStatus = async message => {
       .setColor(0x01d0ff)
       .setDescription(`**Welcome Back! ** You were AFK since ${relativeTime}.`);
 
-    await message.reply({ embeds: [afkRemovedEmbed] });
+    const reply = await message.reply({ embeds: [afkRemovedEmbed] });
+    
+    setTimeout(() => {
+        reply.delete().catch(console.error); // Ensure deletion errors are logged
+      }, 10000); // 10,000 ms = 10 seconds
+      return;
   } catch (error) {
     console.error("Error in checking AFK status:", error);
   }

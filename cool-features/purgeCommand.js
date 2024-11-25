@@ -3,18 +3,22 @@ const serverPrefix = require("../prifix.js");
 const { PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 
 const purgeCommand = async message => {
-  if (message.content.startsWith(`${serverPrefix}p`)) {
+  if (
+    message.content.startsWith(`${serverPrefix}p`) ||
+    message.content.startsWith(`${serverPrefix}purge`)
+  ) {
     // Check if the user has "Manage Messages" permission
     if (!message.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
       const noPermEmbed = errorEmbed("You don't have permissions bro.");
       return message.reply({ embeds: [noPermEmbed] });
     }
     try {
-      // Extract command arguments
-      const args = message.content
-        .slice(serverPrefix.length + 1)
-        .trim()
-        .split(/ +/g);
+      // Extract command arguments dynamically based on prefix length
+      const commandLength = message.content.startsWith(`${serverPrefix}purge`)
+        ? serverPrefix.length + 5 // Adjust for "purge"
+        : serverPrefix.length + 1; // Adjust for "p"
+
+      const args = message.content.slice(commandLength).trim().split(/ +/g);
 
       // Function to send the purge guide embed
       const sendPurgeGuide = () => {
@@ -46,22 +50,8 @@ const purgeCommand = async message => {
 
       // Check for a valid mention
       let targetUser = null;
-      const mentionMatch = args[0].match(/<@!?(\d+)>$/);
-      if (mentionMatch) {
-        targetUser = await message.client.users
-          .fetch(mentionMatch[1])
-          .catch(() => null);
-      } else if (args[1]) {
-        if (args[1].match(/^<@!?\d+>$/)) {
-          targetUser = message.mentions.users.first();
-        } else {
-          return sendPurgeGuide();
-        }
-      }
-
-      // If there's any text after the number that's not a valid mention, send the guide
-      if (args[0].length > numberMatch[0].length && !mentionMatch) {
-        return sendPurgeGuide();
+      if (args[1] && args[1].match(/^<@!?\d+>$/)) {
+        targetUser = message.mentions.users.first();
       }
 
       // Initialize the count for deleted messages
@@ -90,11 +80,13 @@ const purgeCommand = async message => {
         if (fetchedMessages.size < fetchLimit) break;
       }
 
-      // Send a DM to the user confirming the purge
-      const successDMEmbed = successEmbed(
+      // Send a confirmation message in the channel
+      const successEmbedMessage = successEmbed(
         `Successfully purged ${totalMessagesDeleted} messages.`
       );
-      await message.author.send({ embeds: [successDMEmbed] });
+      await message.channel
+        .send({ embeds: [successEmbedMessage] })
+        .then(msg => setTimeout(() => msg.delete(), 5000)); // Delete confirmation after 5s
     } catch (error) {
       console.error("Error purging messages:", error);
       const errorPurgeEmbed = errorEmbed(
