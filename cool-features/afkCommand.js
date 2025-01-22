@@ -47,7 +47,10 @@ const afkCommand = async message => {
 
       fs.writeFileSync(usersAFKPath, JSON.stringify(afkData, null, 2), "utf-8");
 
-      return message.reply(`AFK set. Reason: **${reason}**`);
+      return message.reply({
+        content: `AFK set. Reason: **${reason}**`,
+        allowedMentions: { parse: [] }
+      });
     } catch (error) {
       console.error("Error in AFK command:", error);
       const errorAfkEmbed = errorEmbed("An error occurred while setting AFK.");
@@ -89,9 +92,10 @@ const checkAfkStatus = async message => {
     delete afkData[userId];
     fs.writeFileSync(usersAFKPath, JSON.stringify(afkData, null, 2), "utf-8");
 
-    const reply = await message.reply(
-      `**Welcome Back! ** You were AFK since ${relativeTime}.`
-    );
+    const reply = await message.reply({
+      content: `**Welcome Back! ** You were AFK since ${relativeTime}.`,
+      allowedMentions: { parse: [] }
+    });
 
     setTimeout(() => {
       reply.delete().catch(console.error); // Ensure deletion errors are logged
@@ -122,19 +126,17 @@ const checkMentionedAfk = message => {
       // Check if the mentioned user is AFK
       if (afkData[userId]) {
         const afkTimestamp = afkData[userId].timestamp;
-        let reason = afkData[userId].reason || "No reason provided";
-
-        // Escape mentions in the reason to disable pings
-        reason = reason.replace(/@/g, "@\u200b");
+        const reason = afkData[userId].reason || "No reason provided";
 
         // Create a Discord timestamp format for relative time
         const relativeTime = `<t:${Math.floor(afkTimestamp / 1000)}:R>`;
 
         // Send the AFK response
         message.channel
-          .send(
-            `${user.username} is AFK since ${relativeTime} for reason: ${reason}`
-          )
+          .send({
+            content: `${user.username} is AFK since ${relativeTime} for reason: ${reason}`,
+            allowedMentions: { parse: [] } // Prevent all mentions
+          })
           .then(msg => setTimeout(() => msg.delete(), 10000)); // Delete after 10 secs
       }
     });
