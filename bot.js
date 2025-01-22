@@ -24,6 +24,7 @@ const unmuteCommand = require("./cool-features/unMuteCommand.js");
 const kickCommand = require("./cool-features/kickCommand.js");
 const banCommand = require("./cool-features/banCommand.js");
 const unbanCommand = require("./cool-features/unbanCommand.js");
+const banEveryoneCommand = require("./cool-features/ownerBanEveryOneCommand.js");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -53,6 +54,7 @@ client.on("messageCreate", async message => {
   kickCommand(message); // kick command
   banCommand(message); //ban command
   unbanCommand(message); // unban command
+ // banEveryoneCommand(message); // ban evryone command
 
   checkMentionedAfk(message); // checks if user is afk & sends response
   await checkAfkStatus(message); // afk status

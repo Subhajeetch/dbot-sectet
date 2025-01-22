@@ -47,12 +47,7 @@ const afkCommand = async message => {
 
       fs.writeFileSync(usersAFKPath, JSON.stringify(afkData, null, 2), "utf-8");
 
-      // Send confirmation
-      const afkSetEmbed = new EmbedBuilder()
-        .setColor(0x01d0ff)
-        .setDescription(`AFK set. Reason: **${reason}**`);
-
-      return message.reply({ embeds: [afkSetEmbed] });
+      return message.reply(`AFK set. Reason: **${reason}**`);
     } catch (error) {
       console.error("Error in AFK command:", error);
       const errorAfkEmbed = errorEmbed("An error occurred while setting AFK.");
@@ -94,12 +89,9 @@ const checkAfkStatus = async message => {
     delete afkData[userId];
     fs.writeFileSync(usersAFKPath, JSON.stringify(afkData, null, 2), "utf-8");
 
-    // Send AFK removed confirmation
-    const afkRemovedEmbed = new EmbedBuilder()
-      .setColor(0x01d0ff)
-      .setDescription(`**Welcome Back! ** You were AFK since ${relativeTime}.`);
-
-    const reply = await message.reply({ embeds: [afkRemovedEmbed] });
+    const reply = await message.reply(
+      `**Welcome Back! ** You were AFK since ${relativeTime}.`
+    );
 
     setTimeout(() => {
       reply.delete().catch(console.error); // Ensure deletion errors are logged
@@ -130,15 +122,20 @@ const checkMentionedAfk = message => {
       // Check if the mentioned user is AFK
       if (afkData[userId]) {
         const afkTimestamp = afkData[userId].timestamp;
-        const reason = afkData[userId].reason || "No reason provided";
+        let reason = afkData[userId].reason || "No reason provided";
+
+        // Escape mentions in the reason to disable pings
+        reason = reason.replace(/@/g, "@\u200b");
 
         // Create a Discord timestamp format for relative time
         const relativeTime = `<t:${Math.floor(afkTimestamp / 1000)}:R>`;
 
         // Send the AFK response
-        message.channel.send(
+        message.channel
+          .send(
             `${user.username} is AFK since ${relativeTime} for reason: ${reason}`
-          ).then(msg => setTimeout(() => msg.delete(), 10000)); // Delete after 10 secs
+          )
+          .then(msg => setTimeout(() => msg.delete(), 10000)); // Delete after 10 secs
       }
     });
   } catch (error) {
