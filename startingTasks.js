@@ -1,5 +1,5 @@
-const { ActivityType } = require('discord.js');
-const fs = require('fs');
+const { ActivityType } = require("discord.js");
+const fs = require("fs");
 
 const icons = [
   "images/snow_animekun.gif",
@@ -27,44 +27,57 @@ const avatars = [
 
 const statuses = [
   { name: "You Pooping", type: ActivityType.Watching },
+  { name: "Animekun.top", type: ActivityType.Watching },
   { name: "your Nonsense", type: ActivityType.Listening },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "with your Heart", type: ActivityType.Playing },
-  { name: "Animekun.lol", type: ActivityType.Watching },
+  { name: "Animekun.top", type: ActivityType.Watching },
   { name: "your excuses", type: ActivityType.Listening },
   { name: "you pretend to work", type: ActivityType.Watching },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "nice... for now!", type: ActivityType.Playing },
   { name: "you struggle", type: ActivityType.Watching },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "dumb", type: ActivityType.Playing },
+  { name: "Animekun.lol", type: ActivityType.Playing },
   { name: "you panic", type: ActivityType.Watching },
   { name: "it cool", type: ActivityType.Playing },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "your mess", type: ActivityType.Watching },
   { name: "along", type: ActivityType.Playing },
   { name: "your every move", type: ActivityType.Watching },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "hide and seek", type: ActivityType.Playing },
   { name: "the world burn", type: ActivityType.Watching },
+  { name: "Animekun.lol", type: ActivityType.Playing },
   { name: "your problems", type: ActivityType.Listening },
   { name: "your every mistake", type: ActivityType.Watching },
   { name: "with your mind", type: ActivityType.Playing },
   { name: "your problems", type: ActivityType.Listening },
   { name: "nice with everyone", type: ActivityType.Playing },
+  { name: "Animekun.lol", type: ActivityType.Playing },
   { name: "you fail again", type: ActivityType.Watching },
   { name: "endless drama", type: ActivityType.Listening },
   { name: "with broken hearts", type: ActivityType.Playing },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "you overthink everything", type: ActivityType.Watching },
   { name: "endless excuses", type: ActivityType.Listening },
   { name: "on borrowed time", type: ActivityType.Playing },
   { name: "you complain", type: ActivityType.Listening },
   { name: "you lose control", type: ActivityType.Watching },
+  { name: "Animekun.lol", type: ActivityType.Playing },
   { name: "bad advice", type: ActivityType.Listening },
   { name: "tricks on you", type: ActivityType.Playing },
   { name: "your bold moves", type: ActivityType.Watching },
+  { name: "https://animekun.top", type: ActivityType.Listening },
   { name: "daily drama", type: ActivityType.Listening },
   { name: "you act tough", type: ActivityType.Watching },
   { name: "dumb today", type: ActivityType.Playing },
+  { name: "Animekun.lol", type: ActivityType.Playing },
   { name: "your cringe texts", type: ActivityType.Watching },
-  { name: "with fire", type: ActivityType.Playing }
+  { name: "with fire", type: ActivityType.Playing },
+  { name: "https://animekun.top", type: ActivityType.Listening }
 ]; //ADD ACORDING TO YOU
-
 
 const botIconChangeTime = 5; //number (in minutes)
 const botStatusChangeTime = 1; //number (in minutes)
@@ -79,7 +92,7 @@ async function changeBotAvatar(client) {
     await client.user.setAvatar(fs.readFileSync(avatarPath));
     currentAvatarIndex = (currentAvatarIndex + 1) % avatars.length;
   } catch (error) {
-    console.error('Failed to change bot avatar:', error);
+    console.error("Failed to change bot avatar:", error);
   }
 }
 
@@ -90,7 +103,7 @@ function changeStatus(client) {
     client.user.setActivity(status.name, { type: status.type });
     currentStatusIndex = (currentStatusIndex + 1) % statuses.length;
   } catch (error) {
-    console.error('Failed to change bot status:', error);
+    console.error("Failed to change bot status:", error);
   }
 }
 
